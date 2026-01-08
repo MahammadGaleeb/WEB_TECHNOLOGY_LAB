@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML5 Canvas Exercise</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 2px solid #333;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="myCanvas" width="500" height="300"></canvas>
+
+    <script>
+        // 2. Access the canvas and its drawing context
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 3. Display a filled rectangle
+        ctx.fillStyle = 'pink';
+        ctx.fillRect(50, 50, 150, 100);
+
+        // 4. Display a filled circle
+        ctx.beginPath();
+        ctx.arc(350, 100, 50, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle
+        ctx.fillStyle = 'red';
+        ctx.fill();
+
+        // 5. Display a straight line
+        ctx.beginPath();
+        ctx.moveTo(50, 200);   // Starting point
+        ctx.lineTo(450, 200);  // Ending point
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 10;
+        ctx.stroke();
+
+        // 6. Display the text “HTML5 Canvas”
+        ctx.font = '30px Arial';
+        ctx.fillStyle = '#2c3e50';
+        ctx.textAlign = 'center';
+        ctx.fillText('HTML5 Canvas', canvas.width / 2, 260);
+
+    </script>
+</body>
+</html>
