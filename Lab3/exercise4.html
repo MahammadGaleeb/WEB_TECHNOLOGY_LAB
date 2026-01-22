@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time User Activity Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .interactive-area {
+            background: #f8f9fa;
+            border: 3px dashed #1e3c72;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            min-height: 300px;
+        }
+
+        .interactive-area h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .track-btn {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .track-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .track-btn:active {
+            transform: translateY(0);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #163058;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        .warning-banner {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .warning-banner.show {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .warning-icon {
+            font-size: 30px;
+        }
+
+        .warning-content {
+            flex: 1;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .warning-text {
+            font-size: 13px;
+            opacity: 0.95;
+        }
+
+        .activity-log {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .activity-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .activity-log::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        .activity-log::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 8px;
+        }
+
+        .log-entry {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.2s ease;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .log-entry:hover {
+            background: white;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .log-type {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .log-type.click {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .log-type.keypress {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .log-type.focus {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .log-type.blur {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .log-timestamp {
+            font-size: 11px;
+            color: #999;
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-details {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .log-target {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .log-empty {
+            padding: 40px;
+            text-align: center;
+            color: #999;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .threshold-settings {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .threshold-settings h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .threshold-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .threshold-item label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .threshold-item input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Real-Time User Activity Monitor</h1>
+            <p>Track and analyze user interactions with comprehensive event monitoring</p>
+        </div>
+
+        <div class="section">
+            <h2>📊 Activity Dashboard</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card" id="clickCard">
+                    <div class="stat-value" id="clickCount">0</div>
+                    <div class="stat-label">Clicks</div>
+                </div>
+                <div class="stat-card" id="keypressCard">
+                    <div class="stat-value" id="keypressCount">0</div>
+                    <div class="stat-label">Key Presses</div>
+                </div>
+                <div class="stat-card" id="focusCard">
+                    <div class="stat-value" id="focusCount">0</div>
+                    <div class="stat-label">Focus Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+            </div>
+
+            <div class="warning-banner" id="warningBanner">
+                <div class="warning-icon">⚠️</div>
+                <div class="warning-content">
+                    <div class="warning-title">Suspicious Activity Detected!</div>
+                    <div class="warning-text" id="warningText"></div>
+                </div>
+            </div>
+
+            <div class="interactive-area">
+                <h3>🎯 Interactive Test Area</h3>
+                
+                <div class="button-grid">
+                    <button class="track-btn" data-action="button1">Click Me!</button>
+                    <button class="track-btn" data-action="button2">Test Button</button>
+                    <button class="track-btn" data-action="button3">Action</button>
+                    <button class="track-btn" data-action="button4">Press Here</button>
+                    <button class="track-btn" data-action="button5">Click Test</button>
+                    <button class="track-btn" data-action="button6">Try Me</button>
+                </div>
+
+                <div class="input-group">
+                    <label>Type Something (triggers keypress events):</label>
+                    <input type="text" id="textInput" placeholder="Start typing...">
+                </div>
+
+                <div class="input-group">
+                    <label>Select an Option (triggers focus/change events):</label>
+                    <select id="selectInput">
+                        <option value="">Choose...</option>
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                        <option value="option3">Option 3</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Multi-line Input:</label>
+                    <textarea id="textareaInput" rows="3" placeholder="Type here..."></textarea>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-danger" onclick="clearLog()">Clear Log</button>
+                <button class="btn btn-success" onclick="exportLog()">Export Log</button>
+                <button class="btn btn-primary" onclick="pauseTracking()">
+                    <span id="pauseText">Pause Tracking</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📝 Activity Log</h2>
+
+            <div class="threshold-settings">
+                <h3>⚙️ Warning Thresholds</h3>
+                <div class="threshold-item">
+                    <label>Clicks per minute:</label>
+                    <input type="number" id="clickThreshold" value="50" min="1">
+                </div>
+                <div class="threshold-item">
+                    <label>Keypresses per minute:</label>
+                    <input type="number" id="keypressThreshold" value="100" min="1">
+                </div>
+                <div class="threshold-item">
+                    <label>Focus changes per minute:</label>
+                    <input type="number" id="focusThreshold" value="30" min="1">
+                </div>
+            </div>
+
+            <div class="filter-controls">
+                <button class="filter-btn active" onclick="filterLog('all')">All</button>
+                <button class="filter-btn" onclick="filterLog('click')">Clicks</button>
+                <button class="filter-btn" onclick="filterLog('keypress')">Keys</button>
+                <button class="filter-btn" onclick="filterLog('focus')">Focus</button>
+            </div>
+
+            <div class="activity-log" id="activityLog">
+                <div class="log-empty">No activity recorded yet. Start interacting!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activityLog = [];
+        let isPaused = false;
+        let currentFilter = 'all';
+        let activityCounts = {
+            clicks: 0,
+            keypresses: 0,
+            focus: 0
+        };
+        let activityTimestamps = {
+            clicks: [],
+            keypresses: [],
+            focus: []
+        };
+
+        const thresholds = {
+            clicks: 50,
+            keypresses: 100,
+            focus: 30
+        };
+
+        function logActivity(type, details, target, phase = 'target') {
+            if (isPaused) return;
+
+            const timestamp = new Date();
+            const activity = {
+                type,
+                details,
+                target,
+                phase,
+                timestamp: timestamp.toISOString(),
+                displayTime: timestamp.toLocaleTimeString()
+            };
+
+            activityLog.unshift(activity);
+
+            if (activityLog.length > 500) {
+                activityLog.pop();
+            }
+
+            activityCounts[type === 'click' ? 'clicks' : type === 'keypress' ? 'keypresses' : 'focus']++;
+            activityTimestamps[type === 'click' ? 'clicks' : type === 'keypress' ? 'keypresses' : 'focus'].push(timestamp);
+
+            updateStats();
+            checkSuspiciousActivity();
+            renderLog();
+        }
+
+        function getTargetDescription(element) {
+            if (!element) return 'Unknown';
+            
+            let desc = element.tagName.toLowerCase();
+            if (element.id) desc += `#${element.id}`;
+            if (element.className) desc += `.${element.className.split(' ')[0]}`;
+            if (element.placeholder) desc += ` "${element.placeholder}"`;
+            if (element.dataset.action) desc += ` [${element.dataset.action}]`;
+            
+            return desc;
+        }
+
+        function setupEventListeners() {
+            document.addEventListener('click', function(e) {
+                const target = getTargetDescription(e.target);
+                logActivity('click', `Clicked at (${e.clientX}, ${e.clientY})`, target, 'bubbling');
+            }, false);
+
+            document.addEventListener('click', function(e) {
+                if (e.target !== e.currentTarget) {
+                    const target = getTargetDescription(e.target);
+                    logActivity('click', `Click captured at (${e.clientX}, ${e.clientY})`, target, 'capturing');
+                }
+            }, true);
+
+            document.addEventListener('keydown', function(e) {
+                const target = getTargetDescription(e.target);
+                const key = e.key.length === 1 ? e.key : `[${e.key}]`;
+                const modifiers = [];
+                if (e.ctrlKey) modifiers.push('Ctrl');
+                if (e.shiftKey) modifiers.push('Shift');
+                if (e.altKey) modifiers.push('Alt');
+                
+                const details = modifiers.length > 0 
+                    ? `${modifiers.join('+')}+${key}` 
+                    : key;
+                
+                logActivity('keypress', `Key: ${details}`, target);
+            }, false);
+
+            document.addEventListener('focus', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    const target = getTargetDescription(e.target);
+                    logActivity('focus', 'Element focused', target);
+                }
+            }, true);
+
+            document.addEventListener('blur', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    const target = getTargetDescription(e.target);
+                    logActivity('blur', 'Element blurred', target);
+                }
+            }, true);
+
+            document.querySelectorAll('input, textarea, select').forEach(element => {
+                element.addEventListener('change', function(e) {
+                    const target = getTargetDescription(e.target);
+                    const value = e.target.value.substring(0, 50);
+                    logActivity('focus', `Value changed to: "${value}"`, target);
+                });
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('clickCount').textContent = activityCounts.clicks;
+            document.getElementById('keypressCount').textContent = activityCounts.keypresses;
+            document.getElementById('focusCount').textContent = activityCounts.focus;
+            document.getElementById('totalCount').textContent = activityLog.length;
+        }
+
+        function checkSuspiciousActivity() {
+            const now = Date.now();
+            const oneMinuteAgo = now - 60000;
+
+            const recentClicks = activityTimestamps.clicks.filter(t => t.getTime() > oneMinuteAgo).length;
+            const recentKeypresses = activityTimestamps.keypresses.filter(t => t.getTime() > oneMinuteAgo).length;
+            const recentFocus = activityTimestamps.focus.filter(t => t.getTime() > oneMinuteAgo).length;
+
+            activityTimestamps.clicks = activityTimestamps.clicks.filter(t => t.getTime() > oneMinuteAgo);
+            activityTimestamps.keypresses = activityTimestamps.keypresses.filter(t => t.getTime() > oneMinuteAgo);
+            activityTimestamps.focus = activityTimestamps.focus.filter(t => t.getTime() > oneMinuteAgo);
+
+            const clickThreshold = parseInt(document.getElementById('clickThreshold').value);
+            const keypressThreshold = parseInt(document.getElementById('keypressThreshold').value);
+            const focusThreshold = parseInt(document.getElementById('focusThreshold').value);
+
+            let warnings = [];
+            
+            if (recentClicks > clickThreshold) {
+                warnings.push(`${recentClicks} clicks/min (threshold: ${clickThreshold})`);
+                document.getElementById('clickCard').classList.add('warning');
+            } else {
+                document.getElementById('clickCard').classList.remove('warning');
+            }
+
+            if (recentKeypresses > keypressThreshold) {
+                warnings.push(`${recentKeypresses} keypresses/min (threshold: ${keypressThreshold})`);
+                document.getElementById('keypressCard').classList.add('warning');
+            } else {
+                document.getElementById('keypressCard').classList.remove('warning');
+            }
+
+            if (recentFocus > focusThreshold) {
+                warnings.push(`${recentFocus} focus changes/min (threshold: ${focusThreshold})`);
+                document.getElementById('focusCard').classList.add('warning');
+            } else {
+                document.getElementById('focusCard').classList.remove('warning');
+            }
+
+            const warningBanner = document.getElementById('warningBanner');
+            const warningText = document.getElementById('warningText');
+
+            if (warnings.length > 0) {
+                warningText.textContent = warnings.join(' | ');
+                warningBanner.classList.add('show');
+            } else {
+                warningBanner.classList.remove('show');
+            }
+        }
+
+        function renderLog() {
+            const logContainer = document.getElementById('activityLog');
+            
+            let filteredLog = activityLog;
+            if (currentFilter !== 'all') {
+                filteredLog = activityLog.filter(activity => activity.type === currentFilter);
+            }
+
+            if (filteredLog.length === 0) {
+                logContainer.innerHTML = '<div class="log-empty">No activity recorded yet. Start interacting!</div>';
+                return;
+            }
+
+            logContainer.innerHTML = filteredLog.map(activity => `
+                <div class="log-entry">
+                    <div class="log-header">
+                        <span class="log-type ${activity.type}">${activity.type}</span>
+                        <span class="log-timestamp">${activity.displayTime}</span>
+                    </div>
+                    <div class="log-details">${activity.details}</div>
+                    <div class="log-target">Target: ${activity.target} ${activity.phase !== 'target' ? `[${activity.phase}]` : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterLog(type) {
+            currentFilter = type;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderLog();
+        }
+
+        function clearLog() {
+            if (confirm('Are you sure you want to clear the activity log?')) {
+                activityLog = [];
+                activityCounts = { clicks: 0, keypresses: 0, focus: 0 };
+                activityTimestamps = { clicks: [], keypresses: [], focus: [] };
+                updateStats();
+                renderLog();
+                document.getElementById('warningBanner').classList.remove('show');
+                document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('warning'));
+            }
+        }
+
+        function exportLog() {
+            if (activityLog.length === 0) {
+                alert('No activity to export!');
+                return;
+            }
+
+            const now = new Date();
+            let exportText = `User Activity Log - Generated: ${now.toLocaleString()}\n`;
+            exportText += `=`.repeat(80) + '\n\n';
+            
+            exportText += `SUMMARY STATISTICS:\n`;
+            exportText += `-`.repeat(80) + '\n';
+            exportText += `Total Events: ${activityLog.length}\n`;
+            exportText += `Clicks: ${activityCounts.clicks}\n`;
+            exportText += `Keypresses: ${activityCounts.keypresses}\n`;
+            exportText += `Focus Events: ${activityCounts.focus}\n\n`;
+
+            exportText += `DETAILED ACTIVITY LOG:\n`;
+            exportText += `-`.repeat(80) + '\n\n';
+
+            activityLog.slice().reverse().forEach((activity, index) => {
+                exportText += `[${index + 1}] ${activity.timestamp}\n`;
+                exportText += `Type: ${activity.type.toUpperCase()}\n`;
+                exportText += `Details: ${activity.details}\n`;
+                exportText += `Target: ${activity.target}\n`;
+                exportText += `Phase: ${activity.phase}\n`;
+                exportText += `-`.repeat(40) + '\n';
+            });
+
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `activity-log-${now.getTime()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function pauseTracking() {
+            isPaused = !isPaused;
+            const pauseText = document.getElementById('pauseText');
+            const btn = event.target.closest('button');
+            
+            if (isPaused) {
+                pauseText.textContent = 'Resume Tracking';
+                btn.style.background = '#f39c12';
+            } else {
+                pauseText.textContent = 'Pause Tracking';
+                btn.style.background = '#1e3c72';
+            }
+        }
+
+        setupEventListeners();
+        renderLog();
+
+        setInterval(checkSuspiciousActivity, 5000);
+    </script>
+</body>
+</html>

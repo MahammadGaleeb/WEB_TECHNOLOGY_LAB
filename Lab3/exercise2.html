@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Shopping Cart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            grid-column: 1 / -1;
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .time-banner {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .product-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .category-badge.electronics {
+            background: #3498db;
+        }
+
+        .category-badge.clothing {
+            background: #e74c3c;
+        }
+
+        .category-badge.books {
+            background: #2ecc71;
+        }
+
+        .category-badge.home {
+            background: #f39c12;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .product-price {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            border-color: #667eea;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .item-price {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 4px;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.2s ease;
+        }
+
+        .qty-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .qty-display {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .remove-btn {
+            padding: 8px 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .discount-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .discount-section h3 {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .active-discounts {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .discount-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #e8f5e9;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #2e7d32;
+        }
+
+        .discount-item.time-discount {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .discount-item.coupon-discount {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .coupon-input {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .coupon-input input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .coupon-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .apply-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .apply-btn:hover {
+            background: #5568d3;
+        }
+
+        .coupon-message {
+            margin-top: 8px;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+
+        .coupon-message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .coupon-message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #ddd;
+            padding-top: 12px;
+            margin-top: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #667eea;
+        }
+
+        .savings {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .checkout-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Intelligent Shopping Cart</h1>
+
+        <div class="section">
+            <h2>Products</h2>
+            <div id="timeBanner" class="time-banner"></div>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+
+        <div class="section">
+            <h2>Your Cart (<span id="cartCount">0</span>)</h2>
+            <div id="cartItems"></div>
+
+            <div class="discount-section">
+                <h3>🎁 Active Discounts</h3>
+                <div class="active-discounts" id="activeDiscounts"></div>
+                
+                <div class="coupon-input">
+                    <input type="text" id="couponCode" placeholder="Enter coupon code" maxlength="20">
+                    <button class="apply-btn" onclick="applyCoupon()">Apply</button>
+                </div>
+                <div id="couponMessage"></div>
+            </div>
+
+            <div class="summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Discounts:</span>
+                    <span class="savings" id="totalDiscount">-$0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="total">$0.00</span>
+                </div>
+            </div>
+
+            <button class="checkout-btn" id="checkoutBtn" disabled onclick="checkout()">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: 'Laptop Pro 15"', price: 1299.99, category: 'electronics' },
+            { id: 2, name: 'Wireless Mouse', price: 29.99, category: 'electronics' },
+            { id: 3, name: 'USB-C Cable', price: 12.99, category: 'electronics' },
+            { id: 4, name: 'Cotton T-Shirt', price: 24.99, category: 'clothing' },
+            { id: 5, name: 'Denim Jeans', price: 59.99, category: 'clothing' },
+            { id: 6, name: 'Running Shoes', price: 89.99, category: 'clothing' },
+            { id: 7, name: 'Programming Book', price: 45.99, category: 'books' },
+            { id: 8, name: 'Fiction Novel', price: 14.99, category: 'books' },
+            { id: 9, name: 'Coffee Maker', price: 79.99, category: 'home' },
+            { id: 10, name: 'Desk Lamp', price: 34.99, category: 'home' },
+            { id: 11, name: 'Keyboard Mechanical', price: 149.99, category: 'electronics' },
+            { id: 12, name: 'Winter Jacket', price: 119.99, category: 'clothing' }
+        ];
+
+        let cart = [];
+        let appliedCoupon = null;
+
+        const validCoupons = {
+            'SAVE10': { type: 'percentage', value: 10, description: '10% off entire order' },
+            'SAVE20': { type: 'percentage', value: 20, description: '20% off entire order' },
+            'FLAT50': { type: 'fixed', value: 50, description: '$50 off entire order' },
+            'WELCOME': { type: 'percentage', value: 15, description: '15% off for new users' },
+            'BULK25': { type: 'percentage', value: 25, description: '25% off bulk orders' }
+        };
+
+        const discountRules = {
+            bulk: {
+                threshold: 5,
+                percentage: 10,
+                description: '10% off when buying 5+ items'
+            },
+            electronics: {
+                threshold: 3,
+                percentage: 15,
+                description: '15% off when buying 3+ electronics'
+            },
+            clothing: {
+                threshold: 3,
+                percentage: 20,
+                description: '20% off when buying 3+ clothing items'
+            },
+            books: {
+                threshold: 2,
+                percentage: 12,
+                description: '12% off when buying 2+ books'
+            }
+        };
+
+        function getTimeOfDay() {
+            const hour = new Date().getHours();
+            if (hour >= 0 && hour < 6) return { period: 'Late Night', discount: 15 };
+            if (hour >= 6 && hour < 12) return { period: 'Morning', discount: 10 };
+            if (hour >= 12 && hour < 18) return { period: 'Afternoon', discount: 5 };
+            if (hour >= 18 && hour < 24) return { period: 'Evening', discount: 8 };
+        }
+
+        function updateTimeBanner() {
+            const timeInfo = getTimeOfDay();
+            const banner = document.getElementById('timeBanner');
+            banner.innerHTML = `⏰ ${timeInfo.period} Special: ${timeInfo.discount}% off your entire order!`;
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="category-badge ${product.category}">${product.category}</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">$${product.price.toFixed(2)}</div>
+                    <button class="add-btn" onclick="addToCart(${product.id})">
+                        Add to Cart
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCart();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+        }
+
+        function updateQuantity(productId, change) {
+            const cartItem = cart.find(item => item.id === productId);
+            if (cartItem) {
+                cartItem.quantity += change;
+                if (cartItem.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    updateCart();
+                }
+            }
+        }
+
+        function calculateSubtotal() {
+            return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        }
+
+        function getApplicableDiscounts() {
+            const discounts = [];
+            const subtotal = calculateSubtotal();
+
+            const timeDiscount = getTimeOfDay();
+            discounts.push({
+                type: 'time',
+                name: `${timeDiscount.period} Special`,
+                amount: subtotal * (timeDiscount.discount / 100),
+                percentage: timeDiscount.discount
+            });
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            if (totalItems >= discountRules.bulk.threshold) {
+                discounts.push({
+                    type: 'bulk',
+                    name: 'Bulk Discount',
+                    amount: subtotal * (discountRules.bulk.percentage / 100),
+                    percentage: discountRules.bulk.percentage
+                });
+            }
+
+            const categoryItems = {};
+            cart.forEach(item => {
+                categoryItems[item.category] = (categoryItems[item.category] || 0) + item.quantity;
+            });
+
+            Object.keys(categoryItems).forEach(category => {
+                const rule = discountRules[category];
+                if (rule && categoryItems[category] >= rule.threshold) {
+                    const categoryTotal = cart
+                        .filter(item => item.category === category)
+                        .reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    
+                    discounts.push({
+                        type: 'category',
+                        name: `${category.charAt(0).toUpperCase() + category.slice(1)} Discount`,
+                        amount: categoryTotal * (rule.percentage / 100),
+                        percentage: rule.percentage
+                    });
+                }
+            });
+
+            if (appliedCoupon) {
+                const couponData = validCoupons[appliedCoupon];
+                let couponAmount = 0;
+                
+                if (couponData.type === 'percentage') {
+                    couponAmount = subtotal * (couponData.value / 100);
+                } else if (couponData.type === 'fixed') {
+                    couponAmount = Math.min(couponData.value, subtotal);
+                }
+
+                discounts.push({
+                    type: 'coupon',
+                    name: `Coupon: ${appliedCoupon}`,
+                    amount: couponAmount,
+                    percentage: couponData.type === 'percentage' ? couponData.value : null
+                });
+            }
+
+            return discounts;
+        }
+
+        function applyCoupon() {
+            const input = document.getElementById('couponCode');
+            const code = input.value.trim().toUpperCase();
+            const messageEl = document.getElementById('couponMessage');
+
+            if (code === '') {
+                messageEl.className = 'coupon-message error';
+                messageEl.textContent = 'Please enter a coupon code';
+                return;
+            }
+
+            if (!code.match(/^[A-Z0-9]+$/)) {
+                messageEl.className = 'coupon-message error';
+                messageEl.textContent = 'Invalid coupon format (letters and numbers only)';
+                return;
+            }
+
+            if (validCoupons[code]) {
+                if (appliedCoupon === code) {
+                    messageEl.className = 'coupon-message error';
+                    messageEl.textContent = 'This coupon is already applied';
+                    return;
+                }
+
+                appliedCoupon = code;
+                messageEl.className = 'coupon-message success';
+                messageEl.textContent = `✓ Coupon applied: ${validCoupons[code].description}`;
+                input.value = '';
+                updateCart();
+            } else {
+                messageEl.className = 'coupon-message error';
+                messageEl.textContent = '✗ Invalid coupon code';
+            }
+        }
+
+        function updateCart() {
+            const cartItemsEl = document.getElementById('cartItems');
+            const cartCountEl = document.getElementById('cartCount');
+            const subtotalEl = document.getElementById('subtotal');
+            const totalDiscountEl = document.getElementById('totalDiscount');
+            const totalEl = document.getElementById('total');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            const activeDiscountsEl = document.getElementById('activeDiscounts');
+
+            const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCountEl.textContent = itemCount;
+
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+                checkoutBtn.disabled = true;
+                activeDiscountsEl.innerHTML = '<div style="color: #999; font-size: 13px;">Add items to see available discounts</div>';
+                document.getElementById('couponMessage').textContent = '';
+                appliedCoupon = null;
+            } else {
+                cartItemsEl.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="item-details">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">$${item.price.toFixed(2)} each</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                            <div class="qty-display">${item.quantity}</div>
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+                    </div>
+                `).join('');
+                checkoutBtn.disabled = false;
+            }
+
+            const subtotal = calculateSubtotal();
+            const discounts = getApplicableDiscounts();
+            const totalDiscount = discounts.reduce((sum, d) => sum + d.amount, 0);
+            const total = Math.max(0, subtotal - totalDiscount);
+
+            subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+            totalDiscountEl.textContent = `-$${totalDiscount.toFixed(2)}`;
+            totalEl.textContent = `$${total.toFixed(2)}`;
+
+            if (discounts.length > 0) {
+                activeDiscountsEl.innerHTML = discounts.map(d => `
+                    <div class="discount-item ${d.type}-discount">
+                        <span>${d.name}${d.percentage ? ` (${d.percentage}%)` : ''}</span>
+                        <span>-$${d.amount.toFixed(2)}</span>
+                    </div>
+                `).join('');
+            } else {
+                activeDiscountsEl.innerHTML = '<div style="color: #999; font-size: 13px;">No discounts applied</div>';
+            }
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+
+            const subtotal = calculateSubtotal();
+            const discounts = getApplicableDiscounts();
+            const totalDiscount = discounts.reduce((sum, d) => sum + d.amount, 0);
+            const total = subtotal - totalDiscount;
+
+            alert(`Checkout Summary:
+                
+Items: ${cart.reduce((sum, item) => sum + item.quantity, 0)}
+Subtotal: $${subtotal.toFixed(2)}
+Total Savings: $${totalDiscount.toFixed(2)}
+Final Total: $${total.toFixed(2)}
+
+Thank you for your purchase!`);
+
+            cart = [];
+            appliedCoupon = null;
+            document.getElementById('couponCode').value = '';
+            updateCart();
+        }
+
+        updateTimeBanner();
+        renderProducts();
+        updateCart();
+
+        setInterval(updateTimeBanner, 60000);
+    </script>
+</body>
+</html>
