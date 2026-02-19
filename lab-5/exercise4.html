@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛒 Product Inventory System</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            padding: 20px; 
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+            overflow: hidden;
+        }
+        .header { 
+            background: linear-gradient(45deg, #ff6b6b, #feca57); 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+        }
+        .content { padding: 30px; }
+        .form-row { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 25px; 
+        }
+        input, select { 
+            padding: 12px 15px; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: #667eea; 
+        }
+        button { 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.3s;
+        }
+        #addBtn { 
+            background: linear-gradient(45deg, #11998e, #38ef7d); 
+            color: white; 
+            grid-column: span 2;
+        }
+        #addBtn:hover { transform: translateY(-2px); }
+        #searchBtn, #refreshBtn { 
+            background: #667eea; 
+            color: white; 
+        }
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 30px; 
+        }
+        .stat-card { 
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            text-align: center; 
+        }
+        .stat-card strong { font-size: 28px; display: block; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: white; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        th { 
+            background: #667eea; 
+            color: white; 
+            padding: 18px; 
+            text-align: left; 
+        }
+        td { padding: 16px 18px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9ff; }
+        .low-stock { background: #fff3cd !important; }
+        .out-stock { background: #f8d7da !important; }
+        .price { font-weight: bold; color: #28a745; }
+        .btn-small { 
+            padding: 6px 12px; 
+            margin: 0 3px; 
+            font-size: 13px; 
+        }
+        .edit-btn { background: #17a2b8; color: white; }
+        .delete-btn { background: #dc3545; color: white; }
+        #message { 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            margin: 20px 0; 
+            font-weight: bold; 
+            text-align: center; 
+            display: none; 
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            table { font-size: 14px; }
+            th, td { padding: 12px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 Product Inventory System</h1>
+            <p>Add, Edit, Delete, Search & Track Inventory Value</p>
+        </div>
+        
+        <div class="content">
+            <form id="inventoryForm">
+                <div class="form-row">
+                    <input type="hidden" id="productId">
+                    <input type="text" id="name" placeholder="Product Name *" required>
+                    <select id="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Books">Books</option>
+                        <option value="Food">Food</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="number" id="price" placeholder="Price ($)" min="0.01" step="0.01" required>
+                    <input type="number" id="stock" placeholder="Stock Quantity" min="0" required>
+                    <button type="submit" id="addBtn">➕ Add Product</button>
+                </div>
+            </form>
+
+            <div class="form-row">
+                <input type="text" id="searchCategory" placeholder="🔍 Search by Category (Electronics, Books, etc.)">
+                <button type="button" id="searchBtn" onclick="searchProducts()">Search</button>
+                <button type="button" id="refreshBtn" onclick="loadProducts()">Refresh All</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <strong id="totalProducts">0</strong>
+                    Total Products
+                </div>
+                <div class="stat-card">
+                    <strong id="lowStock">0</strong>
+                    Low Stock (< 10)
+                </div>
+                <div class="stat-card">
+                    <strong id="totalValue">$0.00</strong>
+                    Total Inventory Value
+                </div>
+            </div>
+
+            <table id="productsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productsBody"></tbody>
+            </table>
+
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // SIMULATED API - Replace with real json-server later
+        const API_URL = 'http://localhost:3001/products';
+        const form = document.getElementById('inventoryForm');
+        const productsBody = document.getElementById('productsBody');
+        const messageDiv = document.getElementById('message');
+        const addBtn = document.getElementById('addBtn');
+
+        let editingId = null;
+        let allProducts = [];
+
+        // Initial sample data (when no server available)
+        const sampleProducts = [
+            {id: 1, name: "iPhone 15 Pro", category: "Electronics", price: 999.99, stock: 5},
+            {id: 2, name: "Cotton T-Shirt", category: "Clothing", price: 19.99, stock: 25},
+            {id: 3, name: "Python Programming", category: "Books", price: 29.99, stock: 0},
+            {id: 4, name: "Laptop Charger", category: "Electronics", price: 49.99, stock: 8}
+        ];
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            // Try to load from API, fallback to sample data
+            loadProducts().catch(() => {
+                allProducts = sampleProducts;
+                displayProducts(allProducts);
+                showMessage('Using sample data. Run json-server for full features!', 'success');
+            });
+        });
+
+        // Form submission (Add/Edit)
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const category = document.getElementById('category').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const stock = parseInt(document.getElementById('stock').value);
+
+            // Validation
+            if (!name || !category) {
+                showMessage('Please fill Name and Category', 'error');
+                return;
+            }
+            if (price <= 0 || isNaN(price)) {
+                showMessage('Price must be greater than 0', 'error');
+                return;
+            }
+            if (stock < 0 || isNaN(stock)) {
+                showMessage('Stock cannot be negative', 'error');
+                return;
+            }
+
+            const productData = { name, category, price, stock };
+
+            try {
+                // Try API call first
+                const method = editingId ? 'PUT' : 'POST';
+                const url = editingId ? `${API_URL}/${editingId}` : API_URL;
+                const body = editingId 
+                    ? JSON.stringify(productData)
+                    : JSON.stringify({ id: Date.now(), ...productData });
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body
+                });
+
+                if (!response.ok) throw new Error('API unavailable');
+
+                form.reset();
+                editingId = null;
+                addBtn.textContent = '➕ Add Product';
+                loadProducts();
+                showMessage(editingId ? 'Product updated!' : 'Product added!', 'success');
+                
+            } catch (error) {
+                // Fallback to local storage simulation
+                if (editingId) {
+                    const index = allProducts.findIndex(p => p.id == editingId);
+                    allProducts[index] = { id: editingId, ...productData };
+                    showMessage('Product updated (local mode)', 'success');
+                } else {
+                    const newProduct = { id: Date.now(), ...productData };
+                    allProducts.push(newProduct);
+                    showMessage('Product added (local mode)', 'success');
+                }
+                form.reset();
+                editingId = null;
+                addBtn.textContent = '➕ Add Product';
+                displayProducts(allProducts);
+            }
+        });
+
+        // Load products (API or local)
+        async function loadProducts() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Server not found');
+                allProducts = await response.json();
+            } catch (error) {
+                // Use stored or sample data
+                const stored = localStorage.getItem('inventoryProducts');
+                allProducts = stored ? JSON.parse(stored) : sampleProducts;
+            }
+            document.getElementById('searchCategory').value = '';
+            displayProducts(allProducts);
+            localStorage.setItem('inventoryProducts', JSON.stringify(allProducts));
+        }
+
+        // Search products
+        window.searchProducts = function() {
+            const query = document.getElementById('searchCategory').value.toLowerCase().trim();
+            const filtered = query 
+                ? allProducts.filter(p => p.category.toLowerCase().includes(query))
+                : allProducts;
+            displayProducts(filtered);
+        };
+
+        // Display products with conditional formatting
+        function displayProducts(products) {
+            productsBody.innerHTML = '';
+            if (products.length === 0) {
+                productsBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#666;">No products found</td></tr>';
+                updateStats([]);
+                return;
+            }
+
+            products.forEach(product => {
+                const row = productsBody.insertRow();
+                const isLowStock = product.stock < 10 && product.stock > 0;
+                const isOutStock = product.stock === 0;
+                
+                row.className = isLowStock ? 'low-stock' : isOutStock ? 'out-stock' : '';
+                
+                row.innerHTML = `
+                    <td><strong>${product.id}</strong></td>
+                    <td>${product.name}</td>
+                    <td><span style="background:#e3f2fd;padding:4px 8px;border-radius:4px;font-size:13px;">${product.category}</span></td>
+                    <td class="price">$${product.price.toFixed(2)}</td>
+                    <td><strong style="color:${isLowStock ? '#ff9800' : isOutStock ? '#f44336' : '#28a745'}">${product.stock}</strong></td>
+                    <td>
+                        ${isOutStock ? '❌ Out of Stock' : isLowStock ? '⚠️ Low Stock' : '✅ In Stock'}
+                    </td>
+                    <td>
+                        <button class="btn-small edit-btn" onclick="editProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}', '${product.category}', ${product.price}, ${product.stock})">✏️ Edit</button>
+                        <button class="btn-small delete-btn" onclick="deleteProduct(${product.id})">🗑️ Delete</button>
+                    </td>
+                `;
+            });
+            updateStats(products);
+        }
+
+        // Update dashboard stats
+        function updateStats(products) {
+            const totalProducts = products.length;
+            const lowStock = products.filter(p => p.stock > 0 && p.stock < 10).length;
+            const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
+
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('lowStock').textContent = lowStock;
+            document.getElementById('totalValue').textContent = `$${totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        }
+
+        // Edit product
+        window.editProduct = function(id, name, category, price, stock) {
+            document.getElementById('productId').value = id;
+            document.getElementById('name').value = name;
+            document.getElementById('category').value = category;
+            document.getElementById('price').value = price;
+            document.getElementById('stock').value = stock;
+            editingId = id;
+            addBtn.textContent = '✏️ Update Product';
+            document.getElementById('name').focus();
+            document.getElementById('searchCategory').value = '';
+        };
+
+        // Delete product
+        window.deleteProduct = async function(id) {
+            if (!confirm(`Delete "${allProducts.find(p => p.id == id)?.name || 'Product'}"?`)) return;
+            
+            try {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                loadProducts();
+            } catch (error) {
+                // Local delete
+                const index = allProducts.findIndex(p => p.id == id);
+                if (index > -1) allProducts.splice(index, 1);
+                displayProducts(allProducts);
+                localStorage.setItem('inventoryProducts', JSON.stringify(allProducts));
+            }
+            showMessage('Product deleted!', 'success');
+        };
+
+        // Show messages
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            messageDiv.style.display = 'block';
+            setTimeout(() => messageDiv.style.display = 'none', 4000);
+        }
+    </script>
+</body>
+</html>
