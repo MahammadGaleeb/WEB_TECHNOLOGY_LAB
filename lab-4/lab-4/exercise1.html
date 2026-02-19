@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real‑time username · registration demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #f6f9fc 0%, #e9f2f9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 1rem;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px rgba(0,20,40,0.2), 0 8px 16px rgba(0,0,0,0.1);
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.2s;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #0a2a44;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        h1 span {
+            background: #1e3a6f;
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+        .sub {
+            color: #2c3e66;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            border-left: 4px solid #4f7eb3;
+            padding-left: 1rem;
+            background: rgba(79, 126, 179, 0.06);
+            border-radius: 0 8px 8px 0;
+        }
+        .field {
+            margin-bottom: 1.8rem;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1a2f4f;
+            display: block;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.3px;
+        }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        #username {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1.2rem;
+            font-size: 1rem;
+            background: white;
+            border: 2px solid #cbd6e6;
+            border-radius: 60px;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 10, 20, 0.02);
+        }
+        #username:focus {
+            border-color: #2b6c9e;
+            box-shadow: 0 8px 18px rgba(0, 80, 150, 0.15);
+        }
+        #username.disabled-input {
+            background-color: #f3f7fd;
+            border-color: #a8b9d0;
+            color: #3c4f6e;
+        }
+        .loader {
+            position: absolute;
+            right: 1.2rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid #e0eaf5;
+            border-top: 3px solid #1f5a96;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+            pointer-events: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .feedback {
+            margin-top: 0.6rem;
+            min-height: 2.2rem;
+            font-size: 0.95rem;
+            padding-left: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+        .feedback .icon {
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+        .available {
+            color: #0f6e3f;
+        }
+        .taken {
+            color: #b13e3e;
+        }
+        .hint {
+            font-size: 0.85rem;
+            color: #4d6587;
+            margin-top: -0.8rem;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+        }
+        .hint strong {
+            background: #d4e2f2;
+            padding: 0.2rem 0.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        button {
+            background: #0a2a44;
+            color: white;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            width: 100%;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(10, 42, 68, 0.3);
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            letter-spacing: 0.3px;
+        }
+        button:hover:not(:disabled) {
+            background: #123e64;
+            box-shadow: 0 12px 24px rgba(10, 42, 68, 0.4);
+        }
+        button:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+        button:disabled {
+            background: #99aec9;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .status-badge {
+            display: inline-block;
+            background: #e9eff7;
+            border-radius: 30px;
+            padding: 0.3rem 0.9rem;
+            font-size: 0.85rem;
+            color: #203a5e;
+            margin-top: 0.3rem;
+        }
+        hr {
+            border: none;
+            border-top: 2px dashed #b9cee8;
+            margin: 2rem 0 1rem;
+        }
+        .json-note {
+            background: #f0f6fe;
+            padding: 0.8rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            color: #1b3c61;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            border: 1px solid #b7d0ea;
+        }
+        .json-note code {
+            background: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #003b6f;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>
+        ✦ register
+        <span>AJAX</span>
+    </h1>
+    <div class="sub">instant username validation · simulated JSON backend</div>
+
+    <!-- REGISTRATION FORM -->
+    <form id="registerForm" novalidate>
+        <div class="field">
+            <label for="username">Choose username</label>
+            <div class="input-wrapper">
+                <input type="text" id="username" name="username" 
+                       placeholder="e.g. johndoe" autocomplete="off" 
+                       spellcheck="false" autofocus>
+                <div class="loader" id="loader"></div>
+            </div>
+            <div id="feedbackMessage" class="feedback">
+                <span class="icon" id="feedbackIcon"></span>
+                <span id="feedbackText">type a username...</span>
+            </div>
+            <div class="hint">
+                <strong>📋 existing (JSON):</strong> alice, bob, charlie, admin, jane, john
+            </div>
+        </div>
+
+        <!-- hidden field to prevent form submit if username not available -->
+        <input type="hidden" id="usernameValidHidden" value="false">
+
+        <button type="submit" id="submitBtn" disabled>Create account</button>
+    </form>
+
+    <hr>
+
+    <div class="json-note">
+        <span>⚙️ simulated local JSON</span>
+        <code>usernames.json</code>
+        <span style="margin-left: auto; opacity:0.7;">⏱️ 400ms delay</span>
+    </div>
+    <div class="status-badge" id="liveStatus">👀 waiting for input</div>
+</div>
+
+<script>
+    (function() {
+        // ---------- simulated local JSON (embedded) ----------
+        // In a real scenario this would be fetched from "usernames.json"
+        // but for self‑contained demo we keep it as a static array,
+        // yet we simulate a fetch request (as if from a local JSON).
+        const SIMULATED_USERNAMES = ["alice", "bob", "charlie", "admin", "jane", "john", "guest", "root", "lucia", "max"];
+        
+        // DOM elements
+        const usernameInput = document.getElementById('username');
+        const loader = document.getElementById('loader');
+        const feedbackDiv = document.getElementById('feedbackMessage');
+        const feedbackIcon = document.getElementById('feedbackIcon');
+        const feedbackText = document.getElementById('feedbackText');
+        const hiddenValidField = document.getElementById('usernameValidHidden');
+        const submitBtn = document.getElementById('submitBtn');
+        const liveStatus = document.getElementById('liveStatus');
+        const form = document.getElementById('registerForm');
+
+        // state
+        let currentRequest = null;               // to abort previous fetch if needed
+        let lastCheckedUsername = '';             // avoid duplicate requests
+        let validationInProgress = false;
+        
+        // Helper to update UI based on validity
+        function setAvailabilityState(isAvailable, usernameChecked, serverError = false) {
+            if (serverError) {
+                // If server error (JSON not loaded etc) – we treat as unavailable and prevent submit, but show neutral warning
+                feedbackIcon.textContent = '⚠️';
+                feedbackText.textContent = 'Could not verify username. Try again.';
+                feedbackDiv.className = 'feedback taken';   // make it reddish/orange
+                hiddenValidField.value = 'false';
+                submitBtn.disabled = true;
+                liveStatus.textContent = '⚠️ verification failed';
+                return;
+            }
+
+            if (isAvailable === true) {
+                feedbackIcon.textContent = '✅';
+                feedbackText.textContent = `"${usernameChecked}" is available`;
+                feedbackDiv.className = 'feedback available';
+                hiddenValidField.value = 'true';
+                submitBtn.disabled = false;
+                liveStatus.textContent = `✅ available — you may register`;
+            } else if (isAvailable === false) {
+                feedbackIcon.textContent = '❌';
+                feedbackText.textContent = `"${usernameChecked}" is already taken`;
+                feedbackDiv.className = 'feedback taken';
+                hiddenValidField.value = 'false';
+                submitBtn.disabled = true;
+                liveStatus.textContent = `❌ username taken`;
+            } else {
+                // fallback neutral (null / undefined)
+                feedbackIcon.textContent = '🔵';
+                feedbackText.textContent = 'Start typing...';
+                feedbackDiv.className = 'feedback';
+                hiddenValidField.value = 'false';
+                submitBtn.disabled = true;
+                liveStatus.textContent = `👀 type a username`;
+            }
+        }
+
+        // Reset to neutral (for empty or invalid input)
+        function setNeutralState(message = 'type a username...') {
+            feedbackIcon.textContent = '🔵';
+            feedbackText.textContent = message;
+            feedbackDiv.className = 'feedback';
+            hiddenValidField.value = 'false';
+            submitBtn.disabled = true;
+            liveStatus.textContent = '👀 ' + message;
+        }
+
+        // Show loading indicator and hide any previous results
+        function setLoadingState() {
+            loader.style.display = 'inline-block';
+            usernameInput.classList.add('disabled-input');  // subtle visual
+            feedbackIcon.textContent = '⏳';
+            feedbackText.textContent = 'checking availability...';
+            feedbackDiv.className = 'feedback';  // neutral colour
+            // Do NOT change hidden field until we know result – keep previous valid flag, 
+            // but submit button might be disabled until request completes. 
+            // However, we also disable button during loading (until fresh response)
+            submitBtn.disabled = true;
+            liveStatus.textContent = '⏳ checking ...';
+        }
+
+        function clearLoadingState() {
+            loader.style.display = 'none';
+            usernameInput.classList.remove('disabled-input');
+        }
+
+        // The "AJAX" function that uses Fetch API (with simulated local JSON response)
+        function checkUsernameAvailability(username) {
+            // If no username or too short, reset state
+            if (!username || username.trim().length < 2) {
+                if (currentRequest) {
+                    currentRequest.abort();
+                    currentRequest = null;
+                }
+                clearLoadingState();
+                setNeutralState('minimum 2 characters');
+                lastCheckedUsername = '';
+                return;
+            }
+
+            const trimmed = username.trim().toLowerCase();   // case‑insensitive match
+
+            // avoid identical requests
+            if (trimmed === lastCheckedUsername && validationInProgress === false) {
+                // but maybe already checked? if already checked, the hidden field still holds correct validity.
+                // However we might need to reshow previous result if input unchanged? Actually we preserve.
+                // But if last check gave a result, we keep it, no need to re‑fetch.
+                return;
+            }
+
+            // If we have an ongoing request, cancel it
+            if (currentRequest) {
+                currentRequest.abort();
+                currentRequest = null;
+            }
+
+            // Set loading state
+            setLoadingState();
+            validationInProgress = true;
+
+            // Create an AbortController for this request
+            const controller = new AbortController();
+            currentRequest = controller;
+
+            // Simulate network delay (400ms) + fetch from pretend JSON
+            // We'll use a timeout to mimic async, then resolve with our "local json database"
+            setTimeout(() => {
+                // If the request was aborted, do nothing
+                if (controller.signal.aborted) {
+                    validationInProgress = false;
+                    currentRequest = null;
+                    clearLoadingState();
+                    return;
+                }
+
+                // Simulate successful fetch from local JSON (always succeeds, but we could simulate failure)
+                // For realism, we add a tiny chance to simulate server error (like 500) – 5% random
+                const randomError = Math.random() < 0.05;   // 5% chance error (to show fallback)
+                
+                if (randomError) {
+                    // server error simulation
+                    clearLoadingState();
+                    setAvailabilityState(null, trimmed, true);  // server error
+                    lastCheckedUsername = trimmed;   // we still mark last checked to avoid spamming
+                    validationInProgress = false;
+                    currentRequest = null;
+                    return;
+                }
+
+                // normal validation: check if username exists in our local array (case‑insensitive)
+                const isTaken = SIMULATED_USERNAMES.includes(trimmed);
+                const isAvailable = !isTaken;
+
+                // update UI
+                clearLoadingState();
+                setAvailabilityState(isAvailable, trimmed, false);
+
+                // store last checked so we don't re‑fetch same value
+                lastCheckedUsername = trimmed;
+                validationInProgress = false;
+                currentRequest = null;
+
+            }, 400); // 400ms delay as mentioned in note
+        }
+
+        // Input event handler with debounce (300ms)
+        let debounceTimer;
+        usernameInput.addEventListener('input', function(e) {
+            const value = e.target.value;
+
+            // cancel previous timer and any pending request if new input arrives
+            if (debounceTimer) clearTimeout(debounceTimer);
+            
+            // If there is an ongoing fetch request, abort it
+            if (currentRequest) {
+                currentRequest.abort();
+                currentRequest = null;
+            }
+
+            // Immediately show neutral state if input too short, else waiting
+            if (!value || value.trim().length < 2) {
+                clearLoadingState();
+                setNeutralState('minimum 2 characters');
+                lastCheckedUsername = '';
+                return;
+            }
+
+            // set a gentle loading after typing stops (debounce)
+            debounceTimer = setTimeout(() => {
+                checkUsernameAvailability(value);
+            }, 300);
+        });
+
+        // Also handle on blur (immediate check, but debounced already covers)
+        // Prevent form submission
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();  // always prevent default to handle manually
+
+            // check hidden field
+            const isValid = hiddenValidField.value === 'true';
+            if (!isValid) {
+                // extra safety: show message
+                feedbackIcon.textContent = '⛔';
+                feedbackText.textContent = 'Cannot submit: username unavailable or not verified';
+                feedbackDiv.className = 'feedback taken';
+                liveStatus.textContent = '❌ submission blocked';
+                return;
+            }
+
+            // If valid, show a success message (simulate registration)
+            alert(`✨ Registration successful for "${usernameInput.value.trim()}"! (demo purpose)`);
+            // optionally reset indicator
+        });
+
+        // initialize: disable submit, neutral message
+        setNeutralState('start typing...');
+
+        // minor: simulate initial focus
+        usernameInput.focus();
+
+        // For demo, also we can simulate that JSON is "loaded". In real scenario we would fetch it, but here we embed.
+        // To be even more realistic, we could preload using fetch, but that adds no real value.
+        // just add a readiness note
+        console.log('Demo running with local JSON usernames:', SIMULATED_USERNAMES);
+    })();
+</script>
+</body>
+</html>
