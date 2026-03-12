@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise 2 - Student Object</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 Exercise 2: Student Object</h1>
+            <p>ES6 Features: Object Destructuring & Spread Operator</p>
+        </header>
+
+        <main>
+            <!-- Original Object Section -->
+            <section class="object-section">
+                <h2>Original Student Object</h2>
+                <div id="original-object" class="object-display"></div>
+            </section>
+
+            <!-- Destructuring Section -->
+            <section class="destructuring-section">
+                <h2>Extracted Values (Destructuring)</h2>
+                <div id="extracted-values" class="result-card"></div>
+            </section>
+
+            <!-- Updated Object Section -->
+            <section class="updated-section">
+                <h2>Updated Object (with Grade)</h2>
+                <div id="updated-object" class="object-display"></div>
+            </section>
+
+            <!-- Interactive Section -->
+            <section class="interactive-section">
+                <h2>Add New Student</h2>
+                <div class="input-form">
+                    <div class="form-group">
+                        <label for="newId">ID:</label>
+                        <input type="number" id="newId" placeholder="Enter ID" value="102">
+                    </div>
+                    <div class="form-group">
+                        <label for="newName">Name:</label>
+                        <input type="text" id="newName" placeholder="Enter name" value="Rahul">
+                    </div>
+                    <div class="form-group">
+                        <label for="newDept">Department:</label>
+                        <input type="text" id="newDept" placeholder="Enter department" value="IT">
+                    </div>
+                    <div class="form-group">
+                        <label for="newMarks">Marks:</label>
+                        <input type="number" id="newMarks" placeholder="Enter marks" value="85" min="0" max="100">
+                    </div>
+                    <button id="addStudentBtn" class="btn btn-primary">
+                        ➕ Add Student
+                    </button>
+                </div>
+            </section>
+
+            <!-- All Students Section -->
+            <section class="students-list">
+                <h2>All Students</h2>
+                <div id="students-container" class="students-grid"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2024 Student Object Demo | Built with ES6</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

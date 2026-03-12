@@ -1,0 +1,252 @@
+/* ============================================
+   Light Monochromatic Color Scheme - Blue/Gray
+   ============================================ */
+
+:root {
+    /* Light Blue/Gray Palette */
+    --light-blue-50: #f0f4f8;
+    --light-blue-100: #d9e2ec;
+    --light-blue-200: #bcccdc;
+    --light-blue-300: #9fb3c8;
+    --light-blue-400: #8395a7;
+    --light-blue-500: #687b91;
+    --light-blue-600: #52667a;
+    --light-blue-700: #415265;
+    --light-blue-800: #354254;
+    --light-blue-900: #2a3140;
+    
+    --white: #ffffff;
+    --success: #4a90d9;
+    --success-light: #e8f4fd;
+    --error: #e53e3e;
+    --error-light: #fff5f5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--light-blue-50) 0%, var(--light-blue-100) 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--light-blue-800);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(72, 118, 161, 0.15);
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid var(--light-blue-200);
+}
+
+header h1 {
+    color: var(--light-blue-800);
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: var(--light-blue-600);
+    font-size: 1rem;
+}
+
+/* Main Content */
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+section {
+    background: var(--light-blue-50);
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 5px solid var(--light-blue-300);
+}
+
+section h2 {
+    color: var(--light-blue-800);
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+}
+
+/* Object Display */
+.object-display {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--light-blue-200);
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    color: var(--light-blue-700);
+}
+
+/* Result Card */
+.result-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--light-blue-200);
+    min-height: 80px;
+}
+
+.result-card p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--light-blue-800);
+}
+
+.result-card strong {
+    color: var(--light-blue-900);
+}
+
+/* Input Form */
+.input-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: var(--light-blue-700);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    padding: 12px 15px;
+    border: 2px solid var(--light-blue-200);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--white);
+    color: var(--light-blue-800);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--light-blue-400);
+    box-shadow: 0 0 0 3px rgba(72, 118, 161, 0.1);
+}
+
+/* Buttons */
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--light-blue-700);
+    color: var(--white);
+    border: 2px solid var(--light-blue-700);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(72, 118, 161, 0.3);
+    background: var(--light-blue-800);
+    border-color: var(--light-blue-800);
+}
+
+/* Students Grid */
+.students-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.student-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--light-blue-200);
+    transition: all 0.3s ease;
+}
+
+.student-card:hover {
+    border-color: var(--light-blue-400);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(72, 118, 161, 0.15);
+}
+
+.student-card h3 {
+    color: var(--light-blue-800);
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.student-card p {
+    color: var(--light-blue-600);
+    margin: 5px 0;
+    font-size: 0.95rem;
+}
+
+.student-card .grade {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 10px;
+    background: var(--success-light);
+    color: var(--light-blue-800);
+    border: 1px solid var(--success);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid var(--light-blue-200);
+    color: var(--light-blue-600);
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    header h1 {
+        font-size: 1.6rem;
+    }
+
+    .input-form {
+        grid-template-columns: 1fr;
+    }
+
+    .students-grid {
+        grid-template-columns: 1fr;
+    }
+}

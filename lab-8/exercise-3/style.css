@@ -1,0 +1,297 @@
+/* ============================================
+   Monochromatic Color Scheme - Blue Shades
+   ============================================ */
+
+:root {
+    /* Base Blue Color Palette */
+    --blue-900: #0a192f;
+    --blue-800: #112240;
+    --blue-700: #233554;
+    --blue-600: #303c55;
+    --blue-500: #4a5568;
+    --blue-400: #636e72;
+    --blue-300: #718096;
+    --blue-200: #a0aec0;
+    --blue-100: #cbd5e0;
+    --blue-50: #e2e8f0;
+    --white: #ffffff;
+    --black: #000000;
+    
+    /* Status Colors */
+    --success: #3182ce;
+    --success-light: #ebf8ff;
+    --error: #e53e3e;
+    --error-light: #fff5f5;
+    --warning: #dd6b20;
+    --warning-light: #fffaf0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-800) 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--blue-900);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 50px rgba(10, 25, 47, 0.3);
+}
+
+/* Header Styles */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid var(--blue-700);
+}
+
+header h1 {
+    color: var(--blue-900);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: var(--blue-600);
+    font-size: 1.1rem;
+}
+
+/* Main Content */
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+section {
+    background: var(--blue-50);
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 5px solid var(--blue-700);
+}
+
+section h2 {
+    color: var(--blue-900);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* Info Card Styles */
+.info-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--blue-200);
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    border-color: var(--blue-700);
+    box-shadow: 0 5px 15px rgba(66, 153, 225, 0.15);
+}
+
+.info-card p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 10px 0;
+    color: var(--blue-800);
+}
+
+.info-card strong {
+    color: var(--blue-900);
+}
+
+/* Button Styles */
+.enrollment-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: var(--blue-900);
+    color: var(--white);
+    border: 2px solid var(--blue-900);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(10, 25, 47, 0.3);
+    background: var(--blue-800);
+    border-color: var(--blue-800);
+}
+
+.btn-secondary {
+    background: var(--white);
+    color: var(--blue-900);
+    border: 2px solid var(--blue-700);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(10, 25, 47, 0.2);
+    background: var(--blue-50);
+    border-color: var(--blue-900);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Result Card Styles */
+.result-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--blue-200);
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.result-card.success {
+    border-color: var(--success);
+    background: var(--success-light);
+}
+
+.result-card.error {
+    border-color: var(--error);
+    background: var(--error-light);
+}
+
+.result-card p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.result-card.success p {
+    color: var(--blue-900);
+}
+
+.result-card.error p {
+    color: var(--error);
+}
+
+/* Courses Grid */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.course-card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--blue-200);
+    transition: all 0.3s ease;
+}
+
+.course-card:hover {
+    border-color: var(--blue-700);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(10, 25, 47, 0.15);
+}
+
+.course-card h3 {
+    color: var(--blue-900);
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.course-card p {
+    color: var(--blue-700);
+    margin: 5px 0;
+    font-size: 0.95rem;
+}
+
+.course-card .status {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.course-card .status.available {
+    background: var(--success-light);
+    color: var(--blue-900);
+    border: 1px solid var(--success);
+}
+
+.course-card .status.full {
+    background: var(--error-light);
+    color: var(--error);
+    border: 1px solid var(--error);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid var(--blue-200);
+    color: var(--blue-600);
+    font-size: 0.9rem;
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .enrollment-controls {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+}

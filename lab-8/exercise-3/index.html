@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Enrollment System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Course Enrollment System</h1>
+            <p>ES6 Classes & Promises Demo</p>
+        </header>
+
+        <main>
+            <!-- Course Details Section -->
+            <section class="course-section">
+                <h2>Course Information</h2>
+                <div id="course-details" class="info-card">
+                    <p>Loading course details...</p>
+                </div>
+            </section>
+
+            <!-- Enrollment Section -->
+            <section class="enrollment-section">
+                <h2>Enrollment Status</h2>
+                <div class="enrollment-controls">
+                    <button id="enroll-btn" class="btn btn-primary">
+                        📝 Enroll in Course
+                    </button>
+                    <button id="check-seats-btn" class="btn btn-secondary">
+                        🔍 Check Seats
+                    </button>
+                </div>
+                <div id="enrollment-result" class="result-card">
+                    <p>Click the button to check enrollment status</p>
+                </div>
+            </section>
+
+            <!-- Multiple Courses Section -->
+            <section class="courses-list">
+                <h2>All Available Courses</h2>
+                <div id="courses-container" class="courses-grid">
+                    <!-- Courses will be dynamically added here -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2024 Course Enrollment System | Built with ES6</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise 1 - Student Marks Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Exercise 1: Student Marks Calculator</h1>
+            <p>ES6 Features: let, const, Arrow Functions, Template Literals</p>
+        </header>
+
+        <main>
+            <!-- Input Section -->
+            <section class="input-section">
+                <h2>Enter Student Marks</h2>
+                <div class="input-form">
+                    <div class="form-group">
+                        <label for="studentName">Student Name:</label>
+                        <input type="text" id="studentName" placeholder="Enter name" value="Arun">
+                    </div>
+                    <div class="form-group">
+                        <label for="mark1">Mark 1:</label>
+                        <input type="number" id="mark1" placeholder="Enter mark" value="85" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="mark2">Mark 2:</label>
+                        <input type="number" id="mark2" placeholder="Enter mark" value="90" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="mark3">Mark 3:</label>
+                        <input type="number" id="mark3" placeholder="Enter mark" value="88" min="0" max="100">
+                    </div>
+                    <button id="calculateBtn" class="btn btn-primary">
+                        🧮 Calculate
+                    </button>
+                </div>
+            </section>
+
+            <!-- Result Section -->
+            <section class="result-section">
+                <h2>Results</h2>
+                <div id="result-display" class="result-card">
+                    <p>Click Calculate to see results</p>
+                </div>
+            </section>
+
+            <!-- Code Display Section -->
+            <section class="code-section">
+                <h2>ES6 Features Used</h2>
+                <div class="code-display">
+                    <pre><code>// Variables with let and const
+let studentName = "Arun";
+let mark1 = 85;
+let mark2 = 90;
+let mark3 = 88;
+
+// Arrow Function
+const calculateAverage = (m1, m2, m3) => {
+    return (m1 + m2 + m3) / 3;
+}
+
+// Template Literals
+console.log(`Student Name: ${studentName}`);
+console.log(`Average Marks: ${average}`);</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2024 Student Marks Calculator | Built with ES6</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
